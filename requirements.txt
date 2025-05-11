@@ -1,0 +1,4 @@
+Django==5.2.1
+django-model-utils==5.0.0
+djangorestframework==3.16.0
+pre_commit==4.2.0
