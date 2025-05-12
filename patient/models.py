@@ -4,7 +4,12 @@ from model_utils.models import TimeStampedModel
 
 
 class Patient(TimeStampedModel):
-    """ """
+    """
+    Represents a patient in the system.
+
+    Inherits:
+        TimeStampedModel: Adds 'created' and 'modified' timestamp fields.
+    """
 
     mr_number = models.PositiveBigIntegerField()
     first_name = models.CharField(max_length=255)
@@ -13,7 +18,12 @@ class Patient(TimeStampedModel):
 
 
 class PatientVisit(TimeStampedModel):
-    """ """
+    """
+    Represents a visit made by a patient to the healthcare facility.
+
+    Inherits:
+        TimeStampedModel: Adds 'created' and 'modified' timestamp fields.
+    """
 
     patient = models.ForeignKey(
         Patient, on_delete=models.CASCADE, related_name="visits"

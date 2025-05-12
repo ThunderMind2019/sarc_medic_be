@@ -14,7 +14,31 @@ from patient.serializers import PatientSerializer
 
 
 class PatientBulkUploadView(APIView):
-    """ """
+    """
+    API endpoint to handle bulk CSV uploads for patient data and visits.
+
+    POST:
+        Accepts one or more CSV files via multipart/form-data under the key 'files'.
+        Each CSV should contain the following required headers:
+            - mr_number
+            - first_name
+            - last_name
+            - dob (optional, format: 'YYYY-MM-DD' or 'MM/DD/YYYY')
+            - date (visit datetime, format: 'YYYY-MM-DDTHH:MM[:SS]' or 'MM/DD/YYYY HH:MM')
+            - reason
+
+        For each record:
+            - Creates or retrieves a Patient based on `mr_number`.
+            - Adds a PatientVisit if it does not already exist with the same patient, visit date, and reason.
+            - Duplicates and errors are tracked and reported.
+
+    Response:
+        JSON summary with:
+            - total files processed
+            - number of new records added
+            - number of duplicates skipped
+            - per-file stats with errors if any
+    """
 
     def post(self, request, *args, **kwargs):
         files = request.FILES.getlist("files", [])
@@ -109,7 +133,25 @@ class PatientBulkUploadView(APIView):
 
 
 class PatientView(APIView):
-    """ """
+    """
+    API endpoint to retrieve a paginated list of patients with their visits.
+
+    GET:
+        Returns a paginated list of patients, ordered by their earliest visit date.
+        Each patient includes all associated visits
+
+    Query Parameters:
+        - page (int): The page number to retrieve (default: 1).
+        - page_size (int): Optional if overridden in view or globally via settings.
+
+    Response:
+        Paginated JSON with each patient and their visit data:
+            - mr_number
+            - first_name
+            - last_name
+            - dob
+            - visits: List of visits with visited_date and reason
+    """
 
     def get(self, request, *args, **kwargs):
         patients_qs = Patient.objects.annotate(
